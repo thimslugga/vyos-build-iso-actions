@@ -11,8 +11,9 @@ env:
   ARCHITECTURE: amd64
   BUILD_BY: adam@adamkaminski.com
   BUILD_TYPE: release
-  VERSION: 1.3-5e3b2b9
   DEBIAN_MIRROR: http://mirrors.edge.kernel.org/debian/
+  VERSION: 1.3.0
+  GIT_HASH: 5e2d0fb
 
 jobs:
   build:
@@ -23,12 +24,14 @@ jobs:
 
     steps:
       - name: Clone source code
-        run: git clone -b $BRANCH --single-branch $GIT_CLONE_URL
+        run: |
+          git clone -b $BRANCH --single-branch $GIT_CLONE_URL
+          git reset --hard $GIT_HASH
 
       - name: Build ISO
         working-directory: ./vyos-build
         run: |
-          ./configure --architecture $ARCHITECTURE --build-by $BUILD_BY --build-type $BUILD_TYPE --version $VERSION
+          ./configure --architecture $ARCHITECTURE --build-by $BUILD_BY --build-type $BUILD_TYPE --version $VERSION-$GIT_HASH
           sudo make iso
 
       - name: Upload artifact
